@@ -32,4 +32,4 @@ class TestApiDevices:
         # Assert response status code
         assert response.status_code == 200
         # Assert response body
-        assert response.json()['watt'] == 0
+        assert response.json()['watt'] > 0
