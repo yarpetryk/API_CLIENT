@@ -19,6 +19,7 @@ class TestApiDevices:
                                                     schema=self.devices_valid_schema)
         # Assert response status code
         assert response.status_code == 200
+        assert response.elapsed.total_seconds() < 2
         # Assert response body
         for el in response.json():
             assert el['division'] == 0
@@ -29,6 +30,9 @@ class TestApiDevices:
         response = self.api_client.send_post_request(path="/current/0/operating",
                                                      body=self.current_data_model,
                                                      schema=self.current_data_valid_schema)
+        print(response.status_code)
+        print(response.elapsed.total_seconds())
+        print(response.json()['watt'])
         # Assert response status code
         assert response.status_code == 200
         # Assert response body
