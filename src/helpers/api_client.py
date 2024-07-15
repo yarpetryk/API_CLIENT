@@ -13,14 +13,19 @@ class ApiClientBasicAuth:
         self.auth = HTTPBasicAuth(self.api_config.get_api_config().get("login"),
                                   self.api_config.get_api_config().get("password"))
 
-    def send_get_request(self, path: str, schema: str) -> Response:
+    def send_get_request(self, path: str, schema: str, timeout=1) -> Response or None:
         request_path = self.base_url + path
-        response = requests.get(request_path, auth=self.auth)
+        response = requests.get(request_path, auth=self.auth, timeout=timeout)
         validate(instance=response.json(), schema=schema)
         return response
 
-    def send_post_request(self, path: str, body: str, schema: str) -> Response:
+    def send_post_request(self, path: str, body: str, schema: str, timeout=10) -> Response:
         request_path = self.base_url + path
-        response = requests.post(request_path, auth=self.auth, json=body)
-        validate(instance=response.json(), schema=schema)
+        try:
+            response = requests.post(request_path, auth=self.auth, json=body, timeout=timeout)
+            validate(instance=response.json(), schema=schema)
+        except requests.Timeout as exception:
+            response = None
+            print("Timeout waiting for response to get request to "
+                  f"{request_path} - {exception}")
         return response
